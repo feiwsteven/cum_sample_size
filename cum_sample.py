@@ -1,4 +1,5 @@
 """Module for the prediction of cumulative sample size"""
+
 import argparse
 import os
 import numpy as np
@@ -16,7 +17,7 @@ def cum_equation(alpha: np.ndarray, daily_sample: np.ndarray, cum_sample: np.nda
 
     b = np.zeros(t)
     b[0] = daily_sample[0]
-    for i in range(1, t):
+    for i in range(1, min(t, daily_sample.shape[0])):
         b[i] = daily_sample[i] - np.sum(b[:i] * aug_alpha[1 : (i + 1)][::-1])
         equ[i] = cum_sample[i] - b[: (i + 1)].sum()
 
@@ -30,14 +31,19 @@ def cum_equations(alpha: np.ndarray, data_dir: str):
     aug_alpha[0] = 1
     aug_alpha[1:] = alpha
 
+    k = np.zeros(t)
     files = os.listdir(data_dir)
 
     for file in files:
         file_path = os.path.join(data_dir, file)
         if os.path.isfile(file_path):
             df = pd.read_csv(file_path)
-            equ += cum_equation(alpha, df.n.values, df.cum.values)
+            equ_f = cum_equation(alpha, df.n.values, df.cum.values)
+            k += 1 - (equ_f == 0)
+            equ += equ_f
 
+    equ[1:] = equ[1:] / k[1:]
+    print(alpha)
     return np.sum(equ * equ)
 
 
