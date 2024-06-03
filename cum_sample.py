@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 def cum_equation(alpha: np.ndarray, daily_sample: np.ndarray, cum_sample: np.ndarray):
-    t = daily_sample.shape[0]
+    t = alpha.shape[0] + 1
     equ = np.zeros(t)
     aug_alpha = np.zeros(t)
     aug_alpha[0] = 1
