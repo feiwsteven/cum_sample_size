@@ -1,4 +1,5 @@
 """Module for the prediction of cumulative sample size"""
+
 import argparse
 import os
 import numpy as np
@@ -9,7 +10,7 @@ import matplotlib.pyplot as plt
 
 def cum_equation(alpha: np.ndarray, daily_sample: np.ndarray, cum_sample: np.ndarray):
     t = daily_sample.shape[0]
-    equ = np.zeros(t)
+    equ = np.zeros(alpha.shape[0])
     aug_alpha = np.zeros(t)
     aug_alpha[0] = 1
     aug_alpha[1:] = alpha
@@ -24,9 +25,9 @@ def cum_equation(alpha: np.ndarray, daily_sample: np.ndarray, cum_sample: np.nda
 
 
 def cum_equations(alpha: np.ndarray, data_dir: str):
-    t = alpha.shape[0] + 1
+    t = alpha.shape[0]
     equ = np.zeros(t)
-    aug_alpha = np.zeros(t)
+    aug_alpha = np.zeros(t + 1)
     aug_alpha[0] = 1
     aug_alpha[1:] = alpha
 
