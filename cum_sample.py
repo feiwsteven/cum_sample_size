@@ -43,7 +43,6 @@ def cum_equations(alpha: np.ndarray, data_dir: str):
             equ += equ_f
 
     equ[1:] = equ[1:] / k[1:]
-    print(alpha)
     return np.sum(equ * equ)
 
 
