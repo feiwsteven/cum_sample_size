@@ -6,9 +6,20 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
+import torch.nn as nn
+import torch
 
+class CumSample(nn.Module):
+    def __init__(self, alpha_size) -> None:
+        super().__init__()
+        self.alpha = nn.Parameter(torch.randn(alpha_size))
+    
+    def forward(self, data_dir):
+        y = cum_equations(self.alpha, data_dir)
+    
+        return y
 
-def cum_equation(alpha: np.ndarray, daily_sample: np.ndarray, cum_sample: np.ndarray):
+def cum_equation(alpha: np.ndarray, daily_sample: np.ndarray, cum_sample: np.ndarray) -> np.ndarray:
     t = alpha.shape[0] + 1
     equ = np.zeros(t)
     aug_alpha = np.zeros(t)
@@ -75,7 +86,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Command line arguments for sample size prediction"
     )
-    parser.add_argument("--train_data", type=str, help="Training dataset")
     parser.add_argument("--data_dir", type=str, help="Training dataset folder")
 
     args = parser.parse_args()
