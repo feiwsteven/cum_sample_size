@@ -13,7 +13,7 @@ import torch
 class CumSample(nn.Module):
     def __init__(self, alpha_size) -> None:
         super().__init__()
-        self.alpha = nn.Parameter(torch.randn(alpha_size))
+        self.alpha = nn.Parameter(torch.zeros(alpha_size))
 
     def forward(self, data_dir):
         y = torch_cum_equations(self.alpha, data_dir)
@@ -162,15 +162,20 @@ if __name__ == "__main__":
 
     model = CumSample(args.max_days - 1)
     loss = model(args.data_dir)
-    optimizer = torch.optim.LBFGS(model.parameters(), lr=0.01)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
 
     def closure():
         optimizer.zero_grad()
         loss = model(args.data_dir)
         loss.backward()
+        # Project gradients (replace epsilon with your desired value)
+        # for param in model.parameters():
+        #     if param.grad is not None:
+        #         param.grad = project(param.grad, epsilon=1.0)
+
         return loss
 
-    num_epochs = 100
+    num_epochs = 1000
     for epoch in range(num_epochs):
         with torch.autograd.set_detect_anomaly(True):
             #optimizer.zero_grad()
@@ -178,6 +183,8 @@ if __name__ == "__main__":
             #loss.backward()
             optimizer.step(closure)
             print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {loss}")
-
+            for name, param in model.named_parameters():
+                if param.grad is not None:
+                    print(f"Gradient for {name}: {param.grad}")
     print(f"pytorch alpha={model.alpha}")
     print(f"numpy alpha = {alpha}")
